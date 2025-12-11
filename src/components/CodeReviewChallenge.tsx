@@ -41,12 +41,16 @@ const fetchUsers = (): Promise<UserData[]> => {
 };
 
 const UserList = () => {
-  const [users, setUsers] = useState<any[]>([]); // state 1
+  // 개선점 1) any 타입 사용 -> 안정성 문제 -> 선언된 UserData 로 수정
+  const [users, setUsers] = useState<UserData[]>([]); // state 1
+
   const [filter, setFilter] = useState(''); // state 2
   const [loading, setLoading] = useState(true); // state 3
   const [showAdminsOnly, setShowAdminsOnly] = useState(false); // state 4
 
   // 데이터 로딩
+  // 개선점 2) api 호출 방법 개선 -> error 처리에 대한 부분이 없어서 api 호출이 error 가 났을때, 사용자 입장에서 Erorr 화면을 마주할수있음
+  // 수정방안 -> try catch 구문을 사용해서 error 처리
   useEffect(() => {
     fetchUsers().then(data => {
       setUsers(data);
@@ -55,11 +59,12 @@ const UserList = () => {
   }, []);
 
     // 필터링 로직
+    // 개선점 3) 화면 설계 상 이름으로 검색이 가능한 부분에 이메일 검색 기능까지 같이 포함되어있음.
   const filteredUsers = users.filter(user => {
       const nameMatches = user.name.includes(filter);
-      const emailMatches = user.email.includes(filter);
+      // const emailMatches = user.email.includes(filter);
       const adminMatches = !showAdminsOnly || user.isAdmin;
-      return (nameMatches || emailMatches) && adminMatches;
+      return (nameMatches) && adminMatches;
     });
 
   return (
@@ -70,9 +75,11 @@ const UserList = () => {
       </p>
 
       <div className={styles.controls}>
+        {/* 개선점 4) value값 누락 */}
         <input
           type="text"
           placeholder="이름으로 검색..."
+          value={filter}
           onChange={e => setFilter(e.target.value)}
           className={styles.input}
         />
