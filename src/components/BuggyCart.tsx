@@ -31,12 +31,21 @@ const BuggyCart: React.FC = () => {
   const [items, setItems] = useState<CartItem[]>(initialItems);
 
   // 버그가 있는 Handler
+  // const handleIncreaseQuantity = (itemId: number) => {
+  //   const itemToUpdate = items.find(item => item.id === itemId);
+  //   if (itemToUpdate) {
+  //     itemToUpdate.quantity += 1;
+  //     setItems(items);
+  //   }
+  // };
+
   const handleIncreaseQuantity = (itemId: number) => {
-    const itemToUpdate = items.find(item => item.id === itemId);
-    if (itemToUpdate) {
-      itemToUpdate.quantity += 1;
-      setItems(items);
-    }
+    setItems(prev => 
+      prev.map(item =>
+        item.id === itemId ?
+          { ...item, quantity: item.quantity +1 } : item
+      )
+    )
   };
 
   const totalPrice = useMemo(() => {
